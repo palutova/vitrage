@@ -1,4 +1,5 @@
 require 'rails/generators/active_record'
+require "rails/generators/actions/create_migration"
 
 module Vitrage
   module Generators

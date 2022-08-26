@@ -1,3 +1,0 @@
-<% owner.vitrage_slots.each do |slot| %>
-  <%= render partial: "vitrage/#{slot.piece.class.name.demodulize.underscore}", locals: { piece: slot.piece } %>
-<% end %>

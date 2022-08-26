@@ -1,0 +1,1 @@
+json.slot @slot, :id if @slot

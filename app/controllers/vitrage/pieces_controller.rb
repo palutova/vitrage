@@ -3,9 +3,6 @@ module Vitrage
     before_action :find_vitrage_piece, only: [:show, :edit, :update]
 
     def show
-      respond_to do |format|
-        format.html { render layout: false }
-      end
     end
 
     def new
@@ -15,21 +12,13 @@ module Vitrage
         piece_class = VitrageOwnersPiecesSlot::PIECE_CLASSES_STRINGS.first
       end
       @piece = VitragePieces.const_get(piece_class).new
-
-      respond_to do |format|
-        format.html { render layout: false }
-      end
     end
 
     def edit
-      respond_to do |format|
-        format.html { render layout: false }
-      end
     end
 
     def create
       error_state = nil
-
       # check existance of params
       unless params[:kind] &&
              VitrageOwnersPiecesSlot::PIECE_CLASSES_STRINGS.include?(params[:kind]) &&
@@ -37,7 +26,6 @@ module Vitrage
              params[:owner_id]
         error_state = { descr: "Necessary parameters didn't exist error" }
       end
-
       # get the owner of vitrage
       if error_state.nil?
         @owner = nil
@@ -47,7 +35,6 @@ module Vitrage
           error_state = { descr: "Owner find error" }
         end
       end
-
       # create piece
       if error_state.nil?
         @piece = VitragePieces.const_get(params[:kind]).new
@@ -60,7 +47,6 @@ module Vitrage
           }
         end
       end
-
       # create vitrage slot
       if error_state.nil?
         @slot = VitrageOwnersPiecesSlot.new owner: @owner, piece: @piece
@@ -69,27 +55,15 @@ module Vitrage
           @piece.destroy
         end
       end
-
       if error_state
-        respond_to do |format|
-          format.html { render json: error_state.merge({ status: 'error' }),
-                        status: :unprocessable_entity }
-        end
-      else
-        respond_to do |format|
-          format.html { render layout: false }
-          format.js # for remotipart gem correct work (ajax multipart form)
-        end
-        # render layout: false
+        render json: error_state.merge({ status: 'error' }),
+                        status: :unprocessable_entity
       end
     end
 
     def update
       if @piece.update(vitrage_piece_params)
-        respond_to do |format|
-          format.html { render text: "" }
-          format.js { render text: "" }
-        end
+        render json: { type: @piece.class.name.demodulize.underscore, id:@piece.id  }, status: 'ok'
       else
         error_state = {
           status: 'error',
@@ -97,20 +71,14 @@ module Vitrage
           piece: @piece.class.name.demodulize.underscore,
           errors: @piece.errors
         }
-        respond_to do |format|
-          format.html { render json: error_state, status: :unprocessable_entity }
-          format.js { render json: error_state, status: :unprocessable_entity }
-        end
+        render json: error_state, status: :unprocessable_entity
       end
     end
 
     def destroy
       @slot = VitrageOwnersPiecesSlot.find params[:id]
       @slot.destroy
-
-      respond_to do |format|
-        format.html { render text: "" }
-      end
+      render json: { type: @slot.class.name.demodulize.underscore, id:@slot.id  }, status: 'ok'
     end
 
     def reorder
@@ -146,7 +114,7 @@ module Vitrage
       if wrong_params
         render text: "wrong params", status: :unprocessable_entity
       else
-        render text: "ok"
+        render json: { type: moved_slot.class.name.demodulize.underscore, id:moved_slot.id  }, status: 'ok'
       end
     end
 
@@ -157,7 +125,7 @@ module Vitrage
           slot.update_attributes ordn: indx + 1
         end
       end
-      render text: "ok"
+      render json: {}, status: "ok"
     end
 
     private

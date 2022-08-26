@@ -1,4 +1,4 @@
-class CreateVitrageOwnersPiecesSlots < ActiveRecord::Migration
+class CreateVitrageOwnersPiecesSlots < ActiveRecord::Migration[7.0]
   def self.up
     create_table :vitrage_owners_pieces_slots do |t|
       t.references :owner, polymorphic: true, null: false, index: true

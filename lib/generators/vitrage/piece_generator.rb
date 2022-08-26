@@ -1,4 +1,5 @@
 require 'rails/generators/active_record/model/model_generator'
+require "rails/generators/actions/create_migration"
 
 # I think it isn't optimal solution for items models generation. Rethink.
 
@@ -37,8 +38,8 @@ module Vitrage
       end
 
       def create_necessary_views
-        copy_file 'views/piece_show_generator.html.erb', File.join('app/views/vitrage/', "_#{file_name}.html.erb")
-        copy_file 'views/piece_form_generator.html.erb', File.join('app/views/vitrage/', "_#{file_name}_form.html.erb")
+        copy_file 'views/piece_show_generator.json.jbuilder', File.join('app/views/vitrage/', "_#{file_name}.html.erb")
+        copy_file 'views/piece_edit_generator.json.jbuilder', File.join('app/views/vitrage/', "_#{file_name}_form.html.erb")
       end
     end
   end
